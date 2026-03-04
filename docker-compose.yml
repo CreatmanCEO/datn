@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      timescaledb:
+        condition: service_healthy
+    command: uvicorn src.api.rest:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./src:/app/src
+    restart: unless-stopped
+
+  celery-worker:
+    build: .
+    env_file: .env
+    depends_on: [redis, timescaledb]
+    command: celery -A src.core.orchestrator worker --loglevel=info --concurrency=4
+    deploy:
+      replicas: 2
+    restart: unless-stopped
+
+  celery-beat:
+    build: .
+    env_file: .env
+    depends_on: [redis]
+    command: celery -A src.core.orchestrator beat --loglevel=info
+    restart: unless-stopped
+
+  telegram-bot:
+    build: .
+    env_file: .env
+    depends_on: [api]
+    command: python -m src.api.telegram
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    ports: ["5432:5432"]
+    environment:
+      POSTGRES_USER: datn
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: datn
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U datn"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  pgdata:
