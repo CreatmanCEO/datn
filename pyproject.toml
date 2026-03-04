@@ -1,58 +1,61 @@
-[build-system]
-requires = ["setuptools>=68.0", "wheel"]
-build-backend = "setuptools.backends._legacy:_Backend"
-
 [project]
 name = "datn"
 version = "0.1.0"
 description = "Distributed AI Trading Network — multi-agent trading platform"
-readme = "README.md"
+authors = [{name = "Nik Podolyak", email = "nick@creatman.site"}]
 requires-python = ">=3.11"
+readme = "README.md"
 license = {text = "MIT"}
-authors = [
-    {name = "Nik Podolyak", email = "creatman@creatman.site"}
-]
 
 dependencies = [
     "fastapi>=0.110.0",
     "uvicorn[standard]>=0.27.0",
-    "celery[redis]>=5.3.0",
-    "redis>=5.0.0",
-    "sqlalchemy>=2.0.0",
+    "celery>=5.3.0",
+    "aiokafka>=0.10.0",
+    "asyncpg>=0.29.0",
+    "sqlalchemy>=2.0",
     "alembic>=1.13.0",
-    "psycopg2-binary>=2.9.0",
-    "pydantic>=2.6.0",
-    "pydantic-settings>=2.1.0",
-    "httpx>=0.27.0",
-    "websockets>=12.0",
+    "redis>=5.0",
+    "pydantic>=2.5",
+    "pydantic-settings>=2.1",
+    "torch>=2.1.0",
+    "transformers>=4.36.0",
+    "chronos-t5>=0.1.0",
+    "ccxt>=4.2.0",
+    "pandas>=2.1.0",
     "numpy>=1.26.0",
-    "pandas>=2.2.0",
-    "scipy>=1.12.0",
-    "scikit-learn>=1.4.0",
-    "torch>=2.2.0",
-    "transformers>=4.38.0",
-    "TA-Lib>=0.4.28",
-    "aiogram>=3.4.0",
+    "ta-lib>=0.4.0",
+    "aiogram>=3.3.0",
+    "anthropic>=0.18.0",
     "structlog>=24.1.0",
-    "python-dotenv>=1.0.0",
+    "httpx>=0.27.0",
+    "prometheus-client>=0.20.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0.0",
-    "pytest-asyncio>=0.23.0",
-    "pytest-cov>=4.1.0",
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=4.1",
     "ruff>=0.3.0",
-    "mypy>=1.8.0",
-    "pre-commit>=3.6.0",
+    "mypy>=1.8",
+    "pre-commit>=3.6",
 ]
+
+[build-system]
+requires = ["setuptools>=69.0"]
+build-backend = "setuptools.backends._legacy:_Backend"
 
 [tool.ruff]
 target-version = "py311"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W", "UP"]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
