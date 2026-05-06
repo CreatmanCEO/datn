@@ -1,0 +1,48 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile all Python files
+        run: |
+          find . -name "*.py" -not -path "./.git/*" -not -path "*/node_modules/*" -print0 \
+            | xargs -0 -n1 python -m py_compile
+
+      - name: Check required meta files
+        run: |
+          test -f LICENSE
+          test -f README.md
+          test -f CHANGELOG.md
+          test -f CONTRIBUTING.md
+          test -f pyproject.toml
+          test -f docker-compose.yml
+
+      - name: Check README has key sections
+        run: |
+          grep -q "## Why this exists" README.md
+          grep -q "## Tech stack" README.md
+          grep -q "## Limitations" README.md
+          grep -q "## License" README.md
+
+      - name: Check pyproject is valid TOML
+        run: python -c "import tomllib; tomllib.loads(open('pyproject.toml','rb').read().decode())"
+
+      - name: Validate docker-compose.yml
+        run: |
+          docker compose -f docker-compose.yml config -q || \
+            python -c "import yaml; yaml.safe_load(open('docker-compose.yml'))"

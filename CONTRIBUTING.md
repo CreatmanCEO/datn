@@ -60,3 +60,23 @@ test(forecaster): add backtest for BTC/USDT
 5. Write tests with sample data
 6. Update docs/components.md
 7. Submit PR with description of agent's strategy
+
+## Priority list
+
+1. Wire backtesting harness into the consensus engine
+2. Flesh out FinBERT sentiment agent with live news feed
+3. Chronos-T5 forecaster — first working pipeline + caching
+4. Risk profile and position sizing in `advisor/`
+5. REST API surface + OpenAPI doc generation
+6. Telegram bot MVP commands
+7. Increase test coverage beyond `consensus/`
+
+## PR checklist
+
+- [ ] Branch follows `feature/*` or `fix/*` naming
+- [ ] `ruff check .` passes
+- [ ] `mypy .` passes
+- [ ] `pytest` passes locally
+- [ ] `CHANGELOG.md` updated under `[Unreleased]`
+- [ ] No secrets, model checkpoints, or large fixtures committed
+- [ ] PR description explains the *why*, not just the *what*
